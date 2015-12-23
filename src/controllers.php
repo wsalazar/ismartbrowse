@@ -10,7 +10,6 @@ use Stripe\Error;
 
 $myEmail = EMAIL;
 $ecEmail = EC_EMAIL;
-
 $app->match('/', function () use ($app) {
     $app['session']->getFlashBag()->add('warning', 'Warning flash message');
     $app['session']->getFlashBag()->add('info', 'Info flash message');

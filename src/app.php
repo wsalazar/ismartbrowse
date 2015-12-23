@@ -35,7 +35,7 @@ $app->register(new SecurityServiceProvider(), array(
             'logout'    => true,
             'anonymous' => true,
             'users'     => array(
-                'BACK_USER' => array('ROLE_ADMIN', 'BACK_PASS')
+                BACK_USER => array('ROLE_ADMIN', BACK_PASS)
             )
 //            'users'     => $app['security.users'],
         ),
