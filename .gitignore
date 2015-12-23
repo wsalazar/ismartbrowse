@@ -1,0 +1,6 @@
+/composer.lock
+/resources/cache/*
+/resources/log/*
+/vendor/
+/web/assets/*
+/resources/config/config.php

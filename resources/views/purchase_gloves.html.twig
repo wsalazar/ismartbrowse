@@ -1,0 +1,329 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'form' %}
+
+{% block content %}
+    <div class="image-viewing">
+        <div class="merch pull-right">
+            <img id="display" src="" width="219" height="230"/>
+            <div class="image-array">
+                <div class="image pull-right">
+                    <img id="image1" src="/img/BLACK.jpg" width="50" height="50"/>
+                </div>
+                <div class="image pull-right">
+                    <img id="image2" src="/img/black_gloves.jpg" width="50" height="50"/>
+                </div>
+                <div class="image pull-right">
+                    <img id="image3" src="/img/DETAILS 1.jpg" width="50" height="50"/>
+                </div>
+                <div class="image pull-right">
+                    <img id="image4" src="/img/DETAILS 2.jpg" width="50" height="50"/>
+                </div>
+                <div class="image pull-right">
+                    <img id="image5" src="/img/DETAILS 3.jpg" width="50" height="50"/>
+                </div>
+                <div class="image pull-right">
+                    <img id="image6" src="/img/DETAILS 4.jpg" width="50" height="50"/>
+                </div>
+                <div class="image pull-right">
+                    <img id="image7" src="/img/DETAILS 5.jpg" width="50" height="50"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ form_start(form, {action: path('form'), attr:{'class': 'form-horizontal', 'id': 'payment-form'}}) }}
+    <div id="payment-errors"></div>
+    {{ form_errors(form) }}
+    <div id="form">
+        <h1 class="page-header">
+            Personal Information
+        </h1>
+        <div class="control-group">
+            {{ form_label(form.email) }}
+            <div class="controls">
+                {{ form_widget(form.email) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.firstName) }}
+            <div class="controls">
+                {{ form_widget(form.firstName) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.lastName) }}
+            <div class="controls">
+                {{ form_widget(form.lastName) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.gender) }}
+            <div class="controls">
+                {{ form_widget(form.gender) }}
+            </div>
+        </div>
+        <h1 class="page-header">
+            Billing Information
+        </h1>
+        <div class="control-group">
+            <div class="controls">
+                {{ form_widget(form.sameAsShipping) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.address1Billing) }}
+            <div class="controls">
+                {{ form_widget(form.address1Billing) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.address2Billing) }}
+            <div class="controls">
+                {{ form_widget(form.address2Billing) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.zipBilling) }}
+            <div class="controls">
+                {{ form_widget(form.zipBilling) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.cityBilling) }}
+            <div class="controls">
+                {{ form_widget(form.cityBilling) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.stateBilling) }}
+            <div class="controls">
+                {{ form_widget(form.stateBilling) }}
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.countryBilling) }}
+            <div class="controls">
+                {{ form_widget(form.countryBilling) }}
+            </div>
+        </div>
+        <div class="shippingInformation">
+            <h1 class="page-header">
+                Shipping Information
+            </h1>
+            <div class="control-group">
+                {{ form_label(form.address1Shipping) }}
+                <div class="controls">
+                    {{ form_widget(form.address1Shipping) }}
+                </div>
+            </div>
+            <div class="control-group">
+                {{ form_label(form.address2Shipping) }}
+                <div class="controls">
+                    {{ form_widget(form.address2Shipping) }}
+                </div>
+            </div>
+            <div class="control-group">
+                {{ form_label(form.zipShipping) }}
+                <div class="controls">
+                    {{ form_widget(form.zipShipping) }}
+                </div>
+            </div>
+            <div class="control-group">
+                {{ form_label(form.cityShipping) }}
+                <div class="controls">
+                    {{ form_widget(form.cityShipping) }}
+                </div>
+            </div>
+            <div class="control-group">
+                {{ form_label(form.stateShipping) }}
+                <div class="controls">
+                    {{ form_widget(form.stateShipping) }}
+                </div>
+            </div>
+            <div class="control-group">
+                {{ form_label(form.countryShipping) }}
+                <div class="controls">
+                    {{ form_widget(form.countryShipping) }}
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.quantity) }}
+            <div class="controls">
+                {{ form_widget(form.quantity) }}
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="form_creditCard" class="control-label required">Credit Card Number</label>
+            <div class="controls">
+                <input type="text" size="20" autocomplete="off" placeholder="Credit Car Number" class="creditCard">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="form_ccv" class="control-label required">CCV</label>
+            <div class="controls">
+                <input type="text" size="4" autocomplete="off" placeholder="CCV" class="ccv">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="form_monthExpiration" class="control-label required">Month expiration</label>
+            <div class="controls">
+                <input type="text" size="2" placeholder="MM" class="monthExpiration">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="form_yearExpiration" class="control-label required">Year expiration</label>
+            <div class="controls">
+                <input type="text" size="4" placeholder="YYYY" class="yearExpiration">
+            </div>
+        </div>
+        <div class="control-group">
+            {{ form_label(form.payment) }}
+            <div class="controls">
+                {{ form_widget(form.payment) }}
+            </div>
+        </div>
+
+        <div class="ups-options">
+            <div class="ups-option">
+
+            </div>
+            <div class="ups-option">
+
+            </div>
+            <div class="ups-option">
+
+            </div>
+            <div class="ups-option">
+
+            </div>
+        </div>
+
+        <div class="form-actions">
+            {{ form_widget(form.submit) }}
+        </div>
+        Copyright &copy; 2015 I Browse Smart
+    </div>
+    {{ form_rest(form) }}
+    {{ form_end(form) }}
+    <script type="text/javascript">Stripe.setPublishableKey($('#form_publicKey').val());</script>
+    <script>
+        $(document).ready(function() {
+
+            var onLoadImageId = '#'+$('.image:last-of-type').find('img').attr('id');
+            console.log(onLoadImageId)
+            $('#display').attr('src', $(onLoadImageId).attr('src'));
+
+            $('.image').on('click', function(e){
+                var imageId = '#'+$(this).find('img').attr('id');
+                $('#display').attr('src', $(imageId).attr('src'));
+            });
+
+            $('#form_sameAsShipping_0').on('click', function(e){
+                if ($(this).prop('checked')) {
+                    $('.shippingInformation').hide();
+                    $('.shippingInformation .control-group').each(function(i, e){
+                        $(e).find('input').removeAttr('required');
+                    });
+                } else {
+                    $('.shippingInformation').show();
+                    $('.shippingInformation .control-group').each(function(i, e){
+                        $(e).find('input').attr('required', 'required');
+                    });
+                }
+            });
+            $('#form_quantity').on('blur', function(){
+                if (Number.isInteger(parseInt($('#form_quantity').val()))) {
+
+                    if ($('#form_submit').prop('disabled')) {
+                        $('#form_submit').prop('disabled', false);
+                    }
+
+                }
+            });
+
+
+            $("#payment-form").submit(function(event) {
+                var error = false;
+
+                    if (!Number.isInteger(parseInt($('#form_quantity').val()))) {
+                        error = true;
+                        reportError('Quantity field is an invalid type.');
+                    }
+
+                $('#form_submit').attr('disabled', 'disabled');
+
+                // Get the values:
+                var ccNum = $('.creditCard').val(),
+                        cvcNum = $('.ccv').val(),
+                        expMonth = $('.monthExpiration').val(),
+                        expYear = $('.yearExpiration').val();
+
+                // Validate the number:
+                if (!Stripe.card.validateCardNumber(ccNum)) {
+                    error = true;
+                    reportError('The credit card number appears to be invalid.');
+                }
+
+                // Validate the CVC:
+                if (!Stripe.card.validateCVC(cvcNum)) {
+                    error = true;
+                    reportError('The CVC number appears to be invalid.');
+                }
+
+                // Validate the expiration
+                if (!Stripe.card.validateExpiry(expMonth, expYear)) {
+                    error = true;
+                    reportError('The expiration date appears to be invalid.');
+                }            // Watch for a form submission
+
+                if (!error) {
+                    // Get the Stripe token:
+                    Stripe.card.createToken({
+                        number: ccNum,
+                        cvc: cvcNum,
+                        exp_month: expMonth,
+                        exp_year: expYear
+                    }, stripeResponseHandler);
+                }
+
+                return false;
+            }); // form submission
+        }); // document ready.
+
+
+
+            function stripeResponseHandler(status, response) {
+                console.log(response);
+                if (response.error) {
+                    reportError(response.error.message);
+                } else {
+                    // No errors, submit the form.
+                    // Get a reference to the form:
+                    var f = $("#payment-form");
+
+                    // Get the token from the response:
+                    var token = response.id;
+
+                    // Add the token to the form:
+                    f.append('<input type="hidden" name="stripeToken" value="' + token + '" />');
+                    {#f.append({{ form_widget(form.publicKey) }});#}
+
+                    // Submit the form:
+                    f.get(0).submit();
+                }
+            }
+
+            function reportError(msg) {
+
+                // Show the error in the form:
+                $('#payment-errors').text(msg).addClass('error');
+
+                // Re-enable the submit button:
+                $('#form_submit').prop('disabled', false);
+
+                return false;
+
+            }
+    </script>
+{% endblock %}

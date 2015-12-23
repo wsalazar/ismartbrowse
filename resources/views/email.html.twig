@@ -1,0 +1,37 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ data.firstName }} {{ data.lastName }}, <br /><br/>
+
+    You have purchased {{ data.quantity }} Mobile Friendly Gloves for the amount of ${{ totalAmount }}.<br /><br/>
+
+    {% if sameAsShipping == 1 %}
+        <h1 class="page-header">Billing Information</h1>
+        Address 1: {{ data.address1Billing }}<br />
+        Address 2: {{ data.address2Billing }}<br />
+        City : {{ data.cityBilling }} <br />
+        State: {{ data.stateBilling }} <br />
+        Country: {{ data.countryBilling }} <br />
+        <h1 class="page-header">Shipping Information</h1>
+        Address 1: {{ data.address1Shipping}}<br />
+        Address 2: {{ data.address2Shipping}}<br />
+        City : {{ data.cityShipping }} <br />
+        State: {{ data.stateShipping }} <br />
+        Country: {{ data.countryShipping }} <br />
+    {% else %}
+        <span>Shipping information is the same as Billing information</span><br />
+        <h1 class="page-header">Billing Information</h1>
+        Address 1: {{ data.address1Billing }}<br />
+        Address 2: {{ data.address2Billing }}<br />
+        City : {{ data.cityBilling }} <br />
+        State: {{ data.stateBilling }} <br />
+        Country: {{ data.countryBilling }} <br /><br />
+    {% endif %}
+
+    Thank you for your purchase.<br /><br/>
+
+    Yours Respectfully,<br />
+    I Browse Smart Team<br /><br />
+
+    If there are any problems with your order please contact us: {{ ecEmail }}
+{% endblock %}

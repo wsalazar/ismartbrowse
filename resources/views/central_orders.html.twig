@@ -1,0 +1,107 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {#{{ form_start(form, {action: path('form'), attr:{'class': 'form-horizontal', 'id': 'payment-form'}}) }}#}
+    {#<div id="payment-errors"></div>#}
+    {#{{ form_errors(form) }}#}
+    <table class="table table-bordered table-striped table-responsive">
+        <thead>
+            <th>Full Name</th>
+            <th>Billing Information</th>
+            <th>Shipping Information</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Quantity</th>
+            <th>Prize</th>
+            <th>Total</th>
+            <th>Tracking Number</th>
+            <th>Shipped?</th>
+        </thead>
+        <tbody>
+            {% for key, oneOrder in orders %}
+            {% set gender = oneOrder.gender == 'm' ? 'Male' : 'Female' %}
+            {% set prize = oneOrder.paymentChoice == '1' ? '7' : '10' %}
+            {% set totalPrize = oneOrder.quantity|number_format * prize|number_format %}
+            <tr>
+                <td> {{ form(form[key].orderNumber) }} {{ oneOrder.firstName }} {{ oneOrder.lastName }}</td>
+                <td>
+                    {{ oneOrder.address1Billing }} {{ oneOrder.address2Billing }}<br />
+                    {{ oneOrder.zipBilling }}<br />
+                    {{ oneOrder.cityBilling }}<br />
+                    {{ oneOrder.stateBilling }}<br />
+                    {{ oneOrder.countryBilling }}<br />
+                </td>
+                <td>
+                    {{ oneOrder.address1Shipping }} {{ oneOrder.address2Shipping }}<br />
+                    {{ oneOrder.zipShipping }}<br />
+                    {{ oneOrder.cityShipping }}<br />
+                    {{ oneOrder.stateShipping }}<br />
+                    {{ oneOrder.countryShipping }}<br />
+                </td>
+                <td class="email">{{ oneOrder.email }}</td>
+                <td>{{ gender }}</td>
+                <td>{{ oneOrder.quantity }}</td>
+                <td>${{ prize }}</td>
+                <td>${{ totalPrize }}</td>
+                <td id="tracking-{{ key }}">
+                    {% if oneOrder.trackingNumber %}
+                        {{ oneOrder.trackingNumber }}
+                    {% else  %}
+                    {{ form(form[key].trackingNumber) }}
+                    <span id="tracking_errors-{{ key }}"></span>
+                    {% endif %}
+                </td>
+                <td class="shipped" id="{{ key }}">
+                    {% if oneOrder.shipped == '1' %}
+                        <i class="fa fa-check-square-o" style="color:green"></i>
+                    {% else %}
+                        {{ form(form[key].shipped) }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        Copyright &copy; 2015 I Browse Smart
+
+    <script>
+        $('.shipped').on('change', function(){
+            var that = $(this);
+            var input = $(this).find('input');
+            var id = $(this).attr('id');
+            var trackingNumber = $('#tracking-' + $(this).attr('id')).find('input').val();
+
+            if (input.prop('checked')) {
+                if (trackingNumber == '') {
+                    $('#tracking_errors-' + id).text('Can not be empty');
+                } else {
+                    var re = /\d[A-Z]\d{16}/g;
+                    var isValidTrackingNumber = trackingNumber.match(re);
+                    if (isValidTrackingNumber != null) {
+                        $('#tracking_errors-' + $(this).attr('id')).text('');
+                        var data = {
+                            trackingNumber: trackingNumber,
+                            orderNumber: $(this).closest('tr').children('td:first').find('input').val(),
+                            email: $(this).closest('tr').children('td.email').text()
+                        };
+                        $('#tracking_errors-' + id).text('');
+                        $.post('/central/orders', data, function(response){
+                            if (response == 1) {
+                                console.log(response, 'haha');
+                                console.log($('#tracking-' + id));
+                                $('#tracking-' + id).find('form').empty();
+                                $('#tracking-' + id).text(trackingNumber);
+                                that.find('form').empty();
+                                that.closest('td').html("<i class='fa fa-check-square-o' style='color:green'></i>");
+                            }
+                        });
+                    } else {
+                        $('#tracking_errors-' + $(this).attr('id')).text('Invalid Tracking Number');
+                    }
+                }
+            } else {
+                $('#tracking_errors-' + $(this).attr('id')).text('');
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {{ customerOrder.firstName }} {{ customerOrder.lastName }}, <br /><br/>
+
+    Your order has been shipped.
+
+    Please visit the UPS site to track your order.<br />
+    Track your order with <a href="https://www.ups.com/tracking/tracking.html">{{ customerOrder.trackingNumber }}</a>
+    <br /><br />
+
+    Thank you for your purchase.<br /><br/>
+
+    Yours Respectfully,<br />
+    I Browse Smart Team<br /><br />
+
+    If there are any problems with your order please contact us: {{ ecEmail }}
+{% endblock %}
