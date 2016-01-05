@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
 use Stripe;
 use Stripe\Error;
-//test
+
 $myEmail = EMAIL;
 $ecEmail = EC_EMAIL;
 $app->match('/', function () use ($app) {
