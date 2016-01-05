@@ -1,9 +1,0 @@
-#!/bin/sh
-
-ssh app@APP.SERVER.IP.ADDRESS <<EOF
-  cd /var/www/html/ibrowsesmart
-  git pull
-  php /usr/local/bin/composer install
-  php console assetic:dump
-  exit
-EOF
