@@ -6,6 +6,7 @@ if (getenv('SERVER_CONTEXT') == 'dev') {
 }
 if (getenv('SERVER_CONTEXT') == 'prod') {
     require __DIR__.'../config/config_prod.php';
-}require __DIR__.'/prod.php';
+}
+require __DIR__.'/prod.php';
 // enable the debug mode
 $app['debug'] = true;
