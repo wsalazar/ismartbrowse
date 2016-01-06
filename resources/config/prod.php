@@ -1,5 +1,13 @@
 <?php
 
+// include the prod configuration
+if (getenv('SERVER_CONTEXT') == 'dev') {
+    require __DIR__.'../config/config_dev.php';
+}
+if (getenv('SERVER_CONTEXT') == 'prod') {
+    require __DIR__.'../config/config_prod.php';
+}
+
 // Local
 $app['locale'] = 'fr';
 $app['session.default_locale'] = $app['locale'];
