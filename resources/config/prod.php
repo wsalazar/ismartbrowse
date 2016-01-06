@@ -2,7 +2,7 @@
 
 // include the prod configuration
 
-require __DIR__.'/config_prod.php';
+require __DIR__.'/config.php';
 
 // Local
 $app['locale'] = 'fr';
