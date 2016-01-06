@@ -1,16 +1,13 @@
 <?php
-
 // include the prod configuration
 
 require __DIR__.'/config.php';
-
 // Local
 $app['locale'] = 'fr';
 $app['session.default_locale'] = $app['locale'];
 $app['translator.messages'] = array(
     'fr' => __DIR__.'/../resources/locales/fr.yml',
 );
-//var_dump(__DIR__);exit;
 // Cache
 $app['cache.path'] = __DIR__ . '/../cache';
 
