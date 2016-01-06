@@ -6,7 +6,7 @@ if (getenv('SERVER_CONTEXT') == 'dev') {
     require 'config_dev.php';
 }
 if (getenv('SERVER_CONTEXT') == 'prod') {
-    require 'config_prod.php';// Local
+    require 'config_prod.php';
 }
 
 // Local
@@ -41,7 +41,7 @@ $app['assetic.input.path_to_js']        = array(
 );
 $app['assetic.output.path_to_js']       = 'js/scripts.js';
 
-$app['config.input.path_to_config']     = __DIR__ . '/config_prod.php';
+$app['config.input.path_to_config']     = __DIR__ . '/config.php';
 
 // Doctrine (db)
 $app['db.options'] = array(
