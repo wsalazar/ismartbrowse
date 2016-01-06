@@ -1,10 +1,15 @@
 <?php
 
 // include the prod configuration
+
 if (getenv('SERVER_CONTEXT') == 'dev') {
+    var_dump( __DIR__.'/config_dev.php');
+
     require __DIR__.'/config_dev.php';
 }
 if (getenv('SERVER_CONTEXT') == 'prod') {
+    var_dump( __DIR__.'/config_prod.php');
+
     require __DIR__.'/config_prod.php';
 }
 
@@ -40,7 +45,7 @@ $app['assetic.input.path_to_js']        = array(
 );
 $app['assetic.output.path_to_js']       = 'js/scripts.js';
 
-$app['config.input.path_to_config']     = __DIR__ . '/config.php';
+$app['config.input.path_to_config']     = __DIR__ . '/config_prod.php';
 
 // Doctrine (db)
 $app['db.options'] = array(
