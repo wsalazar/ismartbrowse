@@ -1,7 +1,6 @@
 <?php
 // include the prod configuration
 require __DIR__.'/config.php';
-
 // Local
 $app['locale'] = 'fr';
 $app['session.default_locale'] = $app['locale'];
