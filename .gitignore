@@ -3,5 +3,4 @@
 /resources/log/*
 /vendor/
 /web/assets/*
-/resources/config/config_dev.php
-/resources/config/config_prod.php
+/resources/config/config*.php
