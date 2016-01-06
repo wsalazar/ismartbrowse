@@ -1,12 +1,11 @@
 <?php
 
 // include the prod configuration
-
 if (getenv('SERVER_CONTEXT') == 'dev') {
-    require __DIR__.'config_dev.php';
+    require __DIR__.'/config_dev.php';
 }
 if (getenv('SERVER_CONTEXT') == 'prod') {
-    require __DIR__.'config_prod.php';
+    require __DIR__.'/config_prod.php';
 }
 
 // Local
