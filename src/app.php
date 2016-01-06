@@ -32,7 +32,8 @@ $app->register(new SecurityServiceProvider(), array(
                 'password_parameter' => 'form[password]',
                 'default_target_path' => '/central/orders'
             ),
-            'logout'    => true,
+//            'logout'    => true,
+            'logout' => array('logout_path' => '/admin/logout', 'invalidate_session' => true),
             'anonymous' => true,
             'users'     => array(
                 BACK_USER => array('ROLE_ADMIN', BACK_PASS)

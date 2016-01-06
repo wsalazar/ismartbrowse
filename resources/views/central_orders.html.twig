@@ -1,9 +1,9 @@
 {% extends 'layout.html.twig' %}
+{% block logout %}
+    <a class="logout" href="{{ path('admin_logout') }}">Logout</a>
+{% endblock %}
 
 {% block content %}
-    {#{{ form_start(form, {action: path('form'), attr:{'class': 'form-horizontal', 'id': 'payment-form'}}) }}#}
-    {#<div id="payment-errors"></div>#}
-    {#{{ form_errors(form) }}#}
     <table class="table table-bordered table-striped table-responsive">
         <thead>
             <th>Full Name</th>
