@@ -28,7 +28,6 @@ $app->match('/doctrine', function () use ($app) {
     );
 })->bind('doctrine');
 
-
 $app->match('/central/orders', function(Request $request) use ($app, $myEmail, $ecEmail){
     $orders = $app['db']->fetchAll('
     SELECT * FROM ibrowsersmart_orders;
