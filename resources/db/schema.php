@@ -6,7 +6,7 @@
 
 $schema = new \Doctrine\DBAL\Schema\Schema();
 
-$gloves = $schema->createTable('ibrowsersmart_orders');
+$gloves = $schema->createTable('ibrowsesmart_orders');
 $gloves->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
 $gloves->addColumn('firstName', 'string', array('length' => 255));
 $gloves->addColumn('lastName', 'string', array('length' => 255));
