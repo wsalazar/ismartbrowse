@@ -18,9 +18,9 @@ $app->match('/', function () use ($app) {
 
 $app->match('/central/orders', function(Request $request) use ($app, $myEmail, $ecEmail){
     $orders = $app['db']->fetchAll('
-    SELECT * FROM ibrowsersmart_orders;
+    SELECT * FROM ismartbrowse_orders;
     ');
-//    var_dump($orders);exit;
+
     $form = array();
     $builder = $app['form.factory']->createBuilder('form');
     foreach ($orders as $oneOrder) {
@@ -44,11 +44,11 @@ $app->match('/central/orders', function(Request $request) use ($app, $myEmail, $
             'trackingNumber' => $request->request->get('trackingNumber'),
             'email' => $request->request->get('email'),
         );
-        $updateQuery = "UPDATE ibrowsersmart_orders SET trackingNumber = '" . $order['trackingNumber'] .  "', shipped = 1 WHERE id = " . $order['orderNumber'];
+        $updateQuery = "UPDATE ismartbrowse_orders SET trackingNumber = '" . $order['trackingNumber'] .  "', shipped = 1 WHERE id = " . $order['orderNumber'];
         $result = $app['db']->executeUpdate($updateQuery, array($order['trackingNumber'], 1, $order['orderNumber']));
         if ($result) {
             $id = $request->request->get('orderNumber');
-            $customerOrder = $app['db']->fetchAssoc('SELECT * FROM ibrowsersmart_orders WHERE id = ' . $id);
+            $customerOrder = $app['db']->fetchAssoc('SELECT * FROM ismartbrowse_orders WHERE id = ' . $id);
             $transporter = Swift_SmtpTransport::newInstance(EMAIL_HOST, EMAIL_PORT, 'ssl')
                 ->setUsername($myEmail)
                 ->setPassword(EMAIL_PASS);
@@ -569,7 +569,7 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                     if ($charge->paid == true) {
 
                         $stmt = $app['db']->prepare('
-                                  INSERT INTO ibrowsersmart_orders
+                                  INSERT INTO ismartbrowse_orders
                                   (email, firstName, lastName, gender, address1Billing, address2Billing, zipBilling, cityBilling, stateBilling, countryBilling, address1Shipping, address2Shipping, zipShipping, cityShipping, stateShipping, countryShipping, quantity, paymentChoice, sameAsShipping)
                                  VALUES (:email, :firstName, :lastName, :gender, :address1Billing, :address2Billing, :zipBilling, :cityBilling, :stateBilling, :countryBilling, :address1Shipping, :address2Shipping, :zipShipping, :cityShipping, :stateShipping, :countryShipping, :quantity, :payment, :sameAsShipping)');
 
@@ -658,6 +658,7 @@ $app->error(function (\Exception $e, $code) use ($app) {
             break;
         default:
             $message = 'We are sorry, but something went terribly wrong.';
+//            $app['monolog']->addDebug($e->getMessage());
     }
 
     return new Response($message, $code);
