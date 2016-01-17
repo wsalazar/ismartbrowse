@@ -50,5 +50,6 @@ $app['swiftmailer.options'] = array(
     'encryption' => '',
     'auth_mode' => '',
 );
+
 // User
 $app['security.users'] = array('username' => array('ROLE_USER', 'password'));
