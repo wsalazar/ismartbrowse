@@ -4,3 +4,4 @@
 /vendor/
 /web/assets/*
 /resources/config/config*.php
+/resources/config/dev.php
