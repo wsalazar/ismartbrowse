@@ -33,7 +33,7 @@ $app['assetic.output.path_to_js']       = 'js/scripts.js';
 
 $app['config.input.path_to_config']     = __DIR__ . '/config_prod.php';
 
-// Doctrine (db)
+// Doctrine Configuration (db)
 $app['db.options'] = array(
     'driver'   => 'pdo_mysql',
     'host'     => DB_HOST,
