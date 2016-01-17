@@ -1,6 +1,7 @@
 <?php
 // include the prod configuration
 // Local
+
 $app['locale'] = 'fr';
 $app['session.default_locale'] = $app['locale'];
 $app['translator.messages'] = array(
