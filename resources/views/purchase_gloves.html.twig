@@ -166,17 +166,18 @@
             </div>
         </div>
         <div class="control-group">
-            <label for="form_monthExpiration" class="control-label required">Month expiration</label>
+            <label for="form_monthExpiration" class="control-label required">Year/Month Expiration</label>
             <div class="controls">
+                <input type="text" size="4" placeholder="YYYY" class="yearExpiration"> /
                 <input type="text" size="2" placeholder="MM" class="monthExpiration">
             </div>
         </div>
-        <div class="control-group">
-            <label for="form_yearExpiration" class="control-label required">Year expiration</label>
-            <div class="controls">
-                <input type="text" size="4" placeholder="YYYY" class="yearExpiration">
-            </div>
-        </div>
+        {#<div class="control-group">#}
+            {#<label for="form_yearExpiration" class="control-label required">Year expiration</label>#}
+            {#<div class="controls">#}
+                {#<input type="text" size="4" placeholder="YYYY" class="yearExpiration">#}
+            {#</div>#}
+        {#</div>#}
         <div class="control-group">
             {{ form_label(form.payment) }}
             <div class="controls">
