@@ -12,15 +12,19 @@ use Stripe\Error;
 $myEmail = EMAIL;
 $ecEmail = EC_EMAIL;
 
-$app->match('/', function () use ($app) {
-    return $app->redirect($app['url_generator']->generate('login'));
+$app->match('/', function (Request $request) use ($app) {
+    $referer = $request->headers->get('referer');
+    if (preg_match('/central/', $referer)) {
+        return $app->redirect($app['url_generator']->generate('login'));
+    } else {
+        return $app->redirect($app['url_generator']->generate('form'));
+    }
 })->bind('homepage');
 
 $app->match('/central/orders', function(Request $request) use ($app, $myEmail, $ecEmail){
     $orders = $app['db']->fetchAll('
     SELECT * FROM ismartbrowse_orders;
     ');
-
     $form = array();
     $builder = $app['form.factory']->createBuilder('form');
     foreach ($orders as $oneOrder) {
