@@ -9,11 +9,9 @@ if (getenv('SERVER_CONTEXT') == 'dev') {
     ini_set('display_errors', 'On');
     ini_set('html_errors', 'On');
     date_default_timezone_set('America/New_York');
-    require __DIR__.'/../resources/config/config.php';
 }
 if (getenv('SERVER_CONTEXT') == 'prod') {
     date_default_timezone_set('America/New_York');
-    require __DIR__.'/../resources/config/config.php';
 }
 require __DIR__.'/../resources/config/prod.php';
 require __DIR__.'/../src/app.php';
