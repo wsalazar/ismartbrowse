@@ -1,5 +1,6 @@
 <?php
 // include the prod configuration
+require 'config.php';
 
 $app['locale'] = 'fr';
 $app['session.default_locale'] = $app['locale'];
@@ -38,15 +39,15 @@ $app['db.options'] = array(
     'driver'   => 'pdo_mysql',
     'host'     => DB_HOST,
     'dbname'   => DB_NAME,
-    'user'     => USER,
-    'password' => PASSWORD,
+    'user'     => DB_USER,
+    'password' => DB_PASSWORD,
 );
 
 $app['swiftmailer.options'] = array(
     'host' => EMAIL_HOST,
     'port' => EMAIL_PORT,
-    'username' => EMAIL,
-    'password' => EMAIL_PASS,
+    'username' => SYSTEM_EMAIL,
+    'password' => SYSTEM_PASS,
     'encryption' => '',
     'auth_mode' => '',
 );
