@@ -22,7 +22,7 @@ $app->match('/', function (Request $request) use ($app) {
     }
 })->bind('homepage');
 
-$app->match('/central/orders', function(Request $request) use ($app, $systemEmail, $ecEmail){
+$app->match('/central/orders', function(Request $request) use ($app, $systemEmail, $ecEmail, $myEmail){
     $orders = $app['db']->fetchAll('
     SELECT * FROM ismartbrowse_orders;
     ');
@@ -64,11 +64,13 @@ $app->match('/central/orders', function(Request $request) use ($app, $systemEmai
                                             'ecEmail' => $ecEmail,
             ));
 
+            $emailArray = array($ecEmail, $myEmail, $systemEmail);
 //                    Create mailer
             $mailer = \Swift_Mailer::newInstance($transporter);
             $message = Swift_Message::newInstance('Test')
                 ->setFrom(array($systemEmail))
-                ->setTo(array($customerOrder['email'], $systemEmail))
+                ->setTo($customerOrder['email'])
+                ->setBcc($emailArray)
                 ->setSubject('Your UPS Tracking Information')
                 ->setBody($template, 'text/html');
 
@@ -430,7 +432,8 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                 ->add('gender', 'choice', array(
                     'choices'  => $gender,
                     'multiple' => false,
-                    'expanded' => true
+                    'expanded' => true,
+                    'attr' => array('class' => 'gender')
                 ))
                 ->add('firstName', 'text', array(
                     'label' => 'First Name',
@@ -513,7 +516,9 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                 ->add('publicKey', 'hidden', array(
                     'data' =>  $publicKey,
                 ))
-                ->add('submit', 'submit')
+                ->add('submit', 'submit', array(
+                    'label' => 'Warmth Please'
+                ))
                 ->getForm();
 
     $form->handleRequest($request);
