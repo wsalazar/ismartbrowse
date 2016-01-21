@@ -527,7 +527,7 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
             $errors = array();
             $stripeToken = array();
             $data = $request->request->get('form');
-            $isSameAsShipping = ($data['sameAsShipping'][0] == '1') ? false : true;
+            $isSameAsShipping = (isset($data['sameAsShipping']) && $data['sameAsShipping'][0] == '1') ? false : true;
             if ($isSameAsShipping) {
                 $address1Shipping = $data['address1Shipping'];
                 $address2Shipping = $data['address2Shipping'];
@@ -621,7 +621,7 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                         $mailer = Swift_Mailer::newInstance($transporter);
                         $message = Swift_Message::newInstance('Test')
                             ->setFrom(array($systemEmail))
-                            ->setTo($customerEmail)
+                            ->setTo(array($customerEmail))
                             ->setBcc($emailArray)
                             ->setSubject('I Browse Smart Purchase Order')
                             ->setBody($template, 'text/html');
