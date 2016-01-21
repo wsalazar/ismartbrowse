@@ -9,8 +9,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 //use Stripe;
 use Stripe\Error;
 
-$myEmail = EMAIL;
+$systemEmail = SYSTEM_EMAIL;
 $ecEmail = EC_EMAIL;
+$myEmail = WS_EMAIL;
 
 $app->match('/', function (Request $request) use ($app) {
     $referer = $request->headers->get('referer');
@@ -21,7 +22,7 @@ $app->match('/', function (Request $request) use ($app) {
     }
 })->bind('homepage');
 
-$app->match('/central/orders', function(Request $request) use ($app, $myEmail, $ecEmail){
+$app->match('/central/orders', function(Request $request) use ($app, $systemEmail, $ecEmail, $myEmail){
     $orders = $app['db']->fetchAll('
     SELECT * FROM ismartbrowse_orders;
     ');
@@ -54,7 +55,7 @@ $app->match('/central/orders', function(Request $request) use ($app, $myEmail, $
             $id = $request->request->get('orderNumber');
             $customerOrder = $app['db']->fetchAssoc('SELECT * FROM ismartbrowse_orders WHERE id = ' . $id);
             $transporter = Swift_SmtpTransport::newInstance(EMAIL_HOST, EMAIL_PORT, 'ssl')
-                ->setUsername($myEmail)
+                ->setUsername($systemEmail)
                 ->setPassword(EMAIL_PASS);
 
 //                    Create Twig Template
@@ -63,11 +64,13 @@ $app->match('/central/orders', function(Request $request) use ($app, $myEmail, $
                                             'ecEmail' => $ecEmail,
             ));
 
+            $emailArray = array($ecEmail, $myEmail, $systemEmail);
 //                    Create mailer
             $mailer = \Swift_Mailer::newInstance($transporter);
             $message = Swift_Message::newInstance('Test')
-                ->setFrom(array($myEmail))
-                ->setTo(array($customerOrder['email'], $myEmail))
+                ->setFrom(array($systemEmail))
+                ->setTo($customerOrder['email'])
+                ->setBcc($emailArray)
                 ->setSubject('Your UPS Tracking Information')
                 ->setBody($template, 'text/html');
 
@@ -98,7 +101,7 @@ $app->get('/login', function (Request $request) use ($app) {
     ));
 })->bind('login');
 
-$app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail){
+$app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail, $systemEmail){
     $publicKey = PUBLIC_KEY;
     $privateKey = PRIVATE_KEY;
     $builder = $app['form.factory']->createBuilder('form');
@@ -429,7 +432,8 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                 ->add('gender', 'choice', array(
                     'choices'  => $gender,
                     'multiple' => false,
-                    'expanded' => true
+                    'expanded' => true,
+                    'attr' => array('class' => 'gender')
                 ))
                 ->add('firstName', 'text', array(
                     'label' => 'First Name',
@@ -448,8 +452,8 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                 ))
                 ->add('address2Billing', 'text', array(
                     'label' => 'Address 2',
-                    'constraints' => new Assert\NotBlank(),
-                    'attr'        => array('placeholder' => 'Apt Number')
+                    'attr'        => array('placeholder' => 'Apt Number'),
+                    'required'    => false,
                 ))
                 ->add('zipBilling', 'text', array(
                     'label' => 'Zip',
@@ -487,7 +491,8 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                 ))
                 ->add('address2Shipping', 'text', array(
                     'label' => 'Address 2',
-                    'attr'        => array('placeholder' => 'Apt Number')
+                    'attr'        => array('placeholder' => 'Apt Number'),
+                    'required'    => false,
                 ))
                 ->add('zipShipping', 'text', array(
                     'label' => 'Zip',
@@ -511,7 +516,9 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                 ->add('publicKey', 'hidden', array(
                     'data' =>  $publicKey,
                 ))
-                ->add('submit', 'submit')
+                ->add('submit', 'submit', array(
+                    'label' => 'Warmth Please'
+                ))
                 ->getForm();
 
     $form->handleRequest($request);
@@ -520,7 +527,7 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
             $errors = array();
             $stripeToken = array();
             $data = $request->request->get('form');
-            $isSameAsShipping = ($data['sameAsShipping'][0] == '1') ? false : true;
+            $isSameAsShipping = (isset($data['sameAsShipping']) && $data['sameAsShipping'][0] == '1') ? false : true;
             if ($isSameAsShipping) {
                 $address1Shipping = $data['address1Shipping'];
                 $address2Shipping = $data['address2Shipping'];
@@ -560,7 +567,6 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                     Stripe\Stripe::setApiKey($privateKey);
 
                     $customerEmail = $data['email'];
-                    $emailArray = array($customerEmail, $ecEmail, $myEmail);
 
                     $charge = Stripe\Charge::create(array(
                         "amount"        =>  $amount*100*$data['quantity'],
@@ -598,33 +604,35 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                         $stmt->bindParam(':sameAsShipping', $sameAsShipping);
                         $stmt->execute();
 
-
 //                    Create transport
                         $transporter = Swift_SmtpTransport::newInstance(EMAIL_HOST, EMAIL_PORT, 'ssl')
-                            ->setUsername($myEmail)
-                            ->setPassword(EMAIL_PASS);
-
+                            ->setUsername($systemEmail)
+                            ->setPassword(SYSTEM_PASS);
 //                    Create Twig Template
                         $template = $app['twig']->render('email.html.twig', array(
                                         'data' => $data,
                                         'totalAmount' => $data['quantity'] * $amount,
-                                        'ecEmail'   => $ecEmail,
+                                        'systemEmail'   => $systemEmail,
                                         'sameAsShipping' => $sameAsShipping,
                                     ));
+                        $emailArray = array($ecEmail, $myEmail, $systemEmail);
 
 //                    Create mailer
                         $mailer = Swift_Mailer::newInstance($transporter);
                         $message = Swift_Message::newInstance('Test')
-                            ->setFrom(array($myEmail))
-                            ->setTo($emailArray)
+                            ->setFrom(array($systemEmail))
+                            ->setTo(array($customerEmail))
+                            ->setBcc($emailArray)
                             ->setSubject('I Browse Smart Purchase Order')
                             ->setBody($template, 'text/html');
-                        $mailer->send($message);
+
+                        $isSent = $mailer->send($message);
+
                         $app['session']->getFlashBag()->add('success', 'Thank you for your purchase. Please come back again');
 
 //                        $mailService = $app['service.mailservice'];
 //                        $mailService->setup();
-//                        $mailArray = array('myEmail' => $myEmail, 'toEmail' => $toEmail, 'template' => $template);
+//                        $mailArray = array('myEmail' => $systemEmail, 'toEmail' => $toEmail, 'template' => $template);
 //                        $mailService->sendMail($mailArray);
 
                     }
@@ -661,7 +669,7 @@ $app->error(function (\Exception $e, $code) use ($app) {
             $message = 'The requested page could not be found.';
             break;
         default:
-            $message = 'We are sorry, but something went terribly wrong.';
+            $message = 'We are sorry, but something went terribly wrong.' . $e->getMessage();
 //            $app['monolog']->addDebug($e->getMessage());
     }
 
