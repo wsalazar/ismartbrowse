@@ -2,6 +2,20 @@
 {% set active = 'form' %}
 
 {% block content %}
+    <!-- Container with the Sign-In button. -->
+    <div id="gConnect" class="button">
+        <button class="g-signin"
+                data-scope="email"
+                data-clientid="656135509468-anobpeu7ic02c4icitflbosk7aca8vsi.apps.googleusercontent.com"
+                data-callback="onSignInCallback"
+                data-theme="dark"
+                data-cookiepolicy="single_host_origin">
+        </button>
+        <!-- Textarea for outputting data -->
+        <div id="response" class="hide">
+            <textarea id="responseContainer" style="width:100%; height:150px"></textarea>
+        </div>
+    </div>
     <div class="image-viewing">
         <div class="merch pull-right">
             <img id="display" src="" width="219" height="230"/>
@@ -179,20 +193,14 @@
             </div>
         </div>
 
-        {#<div class="ups-options">#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-        {#</div>#}
+        <div class="shippingOption">
+            <div class="upsOptions">
+                <span class="usps">USPS Shipping Options</span>
+                <div class="uspsDropDownOptions">
+                    {{ form_widget(form.uspsShipping) }}
+                </div>
+            </div>
+        </div>
 
         <div class="form-actions">
             {{ form_widget(form.submit) }}
@@ -204,6 +212,32 @@
     <script type="text/javascript">Stripe.setPublishableKey($('#form_publicKey').val());</script>
     <script>
         $(document).ready(function() {
+
+            $('#form_uspsShipping').on('change', function(e){
+                var zipDestination;
+                var shippingOption = $(this).val();
+                var zipBillingDestination = $('#form_zipBilling').val();
+                var zipShippingDestination = $('#form_zipShipping').val();
+                if (zipShippingDestination == '') {
+                    zipDestination = zipBillingDestination;
+                } else {
+                    zipDestination = zipShippingDestination;
+                }
+                var shippingInfo = {
+                    "shippingOption": shippingOption,
+                    "zipDestination": zipDestination
+                };
+                if (shippingOption != '') {
+                    $.post('/get-shipping/rate', shippingInfo, function (data) {
+                        console.log(data);
+                    });
+                    console.log(shippingOption, zipDestination);
+                }
+//                console.log(shippingOption == '');
+//                if (shippingOption == '') {
+//                    $(this).css('border', '1px solid red');
+//                }
+            });
 
             var onLoadImageId = '#'+$('.image:last-of-type').find('img').attr('id');
             console.log(onLoadImageId)

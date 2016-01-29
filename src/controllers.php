@@ -12,6 +12,7 @@ use Stripe\Error;
 $systemEmail = SYSTEM_EMAIL;
 $ecEmail = EC_EMAIL;
 $myEmail = WS_EMAIL;
+$uspsUsername = USPS_USERNAME;
 
 $app->match('/', function (Request $request) use ($app) {
     $referer = $request->headers->get('referer');
@@ -101,7 +102,7 @@ $app->get('/login', function (Request $request) use ($app) {
     ));
 })->bind('login');
 
-$app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail, $systemEmail){
+$app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail, $systemEmail, $uspsUsername){
     $publicKey = PUBLIC_KEY;
     $privateKey = PRIVATE_KEY;
     $builder = $app['form.factory']->createBuilder('form');
@@ -352,6 +353,13 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
         "ZM" => "Zambia",
         "ZW" => "Zimbabwe");
 
+    $uspsShipping = array(
+        '' => '-- Pick Shipping --',
+        'First Class' => 'First Class',
+        'Priority' => 'Priority',
+        'Retail Ground' => 'Retail Ground',
+    );
+
     $states = array(
         'AL'=>'Alabama',
         'AK'=>'Alaska',
@@ -503,13 +511,21 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
                     'attr'        => array('placeholder' => 'City')
                 ))
                 ->add('stateShipping', 'choice', array(
+                    'label' => 'State',
                     'choices' => $states,
                     'empty_data' => 'Choose your state',
                     'multiple' => false,
                     'expanded' => false
                 ))
                 ->add('countryShipping', 'choice', array(
+                    'label' => 'Country',
                     'choices' => $countries,
+                    'multiple' => false,
+                    'expanded' => false
+                ))
+                ->add('uspsShipping', 'choice', array(
+                    'label' => false,
+                    'choices' => $uspsShipping,
                     'multiple' => false,
                     'expanded' => false
                 ))
@@ -565,6 +581,50 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
             if (empty($errors)) {
                 try {
                     Stripe\Stripe::setApiKey($privateKey);
+
+//                    $uspsUrl = "http://production.shippingapis.com/ShippingApi.dll";
+//                    $res = curl_init();
+//
+////                    Set the Target URL
+//                    curl_setopt($res, CURLOPT_URL, $uspsUrl);
+//                    curl_setopt($res, CURLOPT_HEADER, 1);
+//                    curl_setopt($res, CURLOPT_RETURNTRANSFER, 1);
+//
+////                    parameters to post
+//                    curl_setopt($res, CURLOPT_POST, 1);
+//
+//                    $uspsData = "API=RateV4&XML=
+//                    <RateV4Request USERID=\"$uspsUsername\">
+//                        <Package ID=\"1ST\">
+//                            <Service>PRIORITY</Service>
+//                            <ZipOrigination>11226</ZipOrigination>
+//                            <ZipDestination>" . $data['zipBilling'] ."</ZipDestination>
+//                            <Pounds>1</Pounds>
+//                            <Ounces>8</Ounces>
+//                            <Container>NONRECTANGULAR</Container>
+//                            <Size>LARGE</Size>
+//                            <Width>15</Width>
+//                            <Length>30</Length>
+//                            <Height>15</Height>
+//                            <Girth>55</Girth>
+//                        </Package>
+//                    </RateV4Request>";
+//
+////                    send the post values to USPS
+//                    curl_setopt($res, CURLOPT_POSTFIELDS, $uspsData);
+//                    $response = curl_exec($res);
+//                    $responseData = strstr($response, '<?') ;
+//                    $xmlParser = xml_parser_create();
+//                    xml_parse_into_struct($xmlParser, $responseData, $responseValues, $index);
+//                    xml_parser_free($xmlParser);
+//
+//                    var_dump($responseValues);
+//
+//                    curl_close($res);
+
+//                    $shippingRate = $responseValues[11]['value'];
+//                    var_dump($shippingRate);
+//                    exit;
 
                     $customerEmail = $data['email'];
 
@@ -651,6 +711,62 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
     return $app['twig']->render('purchase_gloves.html.twig', array('form' => $form->createView()));
 
 })->bind('form');
+
+$app->post('/get-shipping/rate', function(Request $request) use($app, $uspsUsername){
+//    var_dump($request->request->get('shippingOption'));
+//    var_dump($request->request->get('zipDestination'));
+    $shippingOption = strtoupper($request->request->get('shippingOption'));
+    $zipDestination = $request->request->get('zipDestination');
+
+    $uspsUrl = "http://production.shippingapis.com/ShippingApi.dll";
+    $res = curl_init();
+
+//                    Set the Target URL
+    curl_setopt($res, CURLOPT_URL, $uspsUrl);
+    curl_setopt($res, CURLOPT_HEADER, 1);
+    curl_setopt($res, CURLOPT_RETURNTRANSFER, 1);
+
+//                    parameters to post
+    curl_setopt($res, CURLOPT_POST, 1);
+    $uspsBeginData = "API=RateV4&XML=
+                    <RateV4Request USERID=\"$uspsUsername\">
+                        <Revision>2</Revision>
+                        <Package ID=\"1ST\">
+                            <Service>".$shippingOption."</Service>
+                            <ZipOrigination>11226</ZipOrigination>
+                            <ZipDestination>$zipDestination</ZipDestination>
+                            <Pounds>1</Pounds>
+                            <Ounces>8</Ounces>
+                            <Container>NONRECTANGULAR</Container>
+                            <Size>LARGE</Size>
+                            <Width>15</Width>
+                            <Length>30</Length>
+                            <Height>15</Height>
+                            <Girth>55</Girth>
+                            <Machinable>True</Machinable>";
+//                            <Container>RECTANGULAR</Container>
+//                            <Size>REGULAR</Size>";
+    $uspsExtraData = '';
+//    if ($shippingOption == 'RETAIL GROUND' || $shippingOption == 'FIRST CLASS' ||$shippingOption == 'PRIORITY') {
+//        $uspsExtraData = "<Machinable>True</Machinable>";
+//    }
+    $uspsEndData =
+                           "</Package>
+                        </RateV4Request>";
+    $uspsData = $uspsBeginData.$uspsExtraData.$uspsEndData;
+var_dump($uspsData);
+//                    send the post values to USPS
+    curl_setopt($res, CURLOPT_POSTFIELDS, $uspsData);
+    $response = curl_exec($res);
+    $responseData = strstr($response, '<?') ;
+    $xmlParser = xml_parser_create();
+    xml_parse_into_struct($xmlParser, $responseData, $responseValues, $index);
+    xml_parser_free($xmlParser);
+
+    var_dump($responseValues);
+
+    curl_close($res);
+});
 
 $app->get('/page-with-cache', function () use ($app) {
     $response = new Response($app['twig']->render('page-with-cache.html.twig', array('date' => date('Y-M-d h:i:s'))));
