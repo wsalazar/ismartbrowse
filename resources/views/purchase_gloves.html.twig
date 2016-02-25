@@ -2,20 +2,9 @@
 {% set active = 'form' %}
 
 {% block content %}
-    <!-- Container with the Sign-In button. -->
-    <div id="gConnect" class="button">
-        <button class="g-signin"
-                data-scope="email"
-                data-clientid="656135509468-anobpeu7ic02c4icitflbosk7aca8vsi.apps.googleusercontent.com"
-                data-callback="onSignInCallback"
-                data-theme="dark"
-                data-cookiepolicy="single_host_origin">
-        </button>
-        <!-- Textarea for outputting data -->
-        <div id="response" class="hide">
-            <textarea id="responseContainer" style="width:100%; height:150px"></textarea>
-        </div>
-    </div>
+    {#<iframe src="https://accounts.google.com/o/oauth2/token">#}
+
+    {#</iframe>#}
     <div class="image-viewing">
         <div class="merch pull-right">
             <img id="display" src="" width="219" height="230"/>

@@ -9,10 +9,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 //use Stripe;
 use Stripe\Error;
 
-$systemEmail = SYSTEM_EMAIL;
-$ecEmail = EC_EMAIL;
-$myEmail = WS_EMAIL;
+$emailArray = [SYSTEM_EMAIL, EC_EMAIL, JT_EMAIL, WS_EMAIL];
 $uspsUsername = USPS_USERNAME;
+
 
 $app->match('/', function (Request $request) use ($app) {
     $referer = $request->headers->get('referer');
@@ -23,7 +22,7 @@ $app->match('/', function (Request $request) use ($app) {
     }
 })->bind('homepage');
 
-$app->match('/central/orders', function(Request $request) use ($app, $systemEmail, $ecEmail, $myEmail){
+$app->match('/central/orders', function(Request $request) use ($app, $emailArray){
     $orders = $app['db']->fetchAll('
     SELECT * FROM ismartbrowse_orders;
     ');
@@ -56,22 +55,21 @@ $app->match('/central/orders', function(Request $request) use ($app, $systemEmai
             $id = $request->request->get('orderNumber');
             $customerOrder = $app['db']->fetchAssoc('SELECT * FROM ismartbrowse_orders WHERE id = ' . $id);
             $transporter = Swift_SmtpTransport::newInstance(EMAIL_HOST, EMAIL_PORT, 'ssl')
-                ->setUsername($systemEmail)
+                ->setUsername($emailArray[0])
                 ->setPassword(EMAIL_PASS);
 
 //                    Create Twig Template
             $template = $app['twig']->render('upsTrackingInformation.html.twig', array(
                                             'customerOrder' => $customerOrder,
-                                            'ecEmail' => $ecEmail,
+                                            'ecEmail' => $emailArray[1],
             ));
 
-            $emailArray = array($ecEmail, $myEmail, $systemEmail);
 //                    Create mailer
             $mailer = \Swift_Mailer::newInstance($transporter);
             $message = Swift_Message::newInstance('Test')
-                ->setFrom(array($systemEmail))
+                ->setFrom(array($emailArray[0]))
                 ->setTo($customerOrder['email'])
-                ->setBcc($emailArray)
+                ->setBcc([$emailArray[1], $emailArray[2]. $emailArray[3]])
                 ->setSubject('Your UPS Tracking Information')
                 ->setBody($template, 'text/html');
 
@@ -102,7 +100,7 @@ $app->get('/login', function (Request $request) use ($app) {
     ));
 })->bind('login');
 
-$app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail, $systemEmail, $uspsUsername){
+$app->match('/purchase', function(Request $request) use($app, $uspsUsername, $emailArray){
     $publicKey = PUBLIC_KEY;
     $privateKey = PRIVATE_KEY;
     $builder = $app['form.factory']->createBuilder('form');
@@ -666,23 +664,23 @@ $app->match('/purchase', function(Request $request) use($app, $ecEmail, $myEmail
 
 //                    Create transport
                         $transporter = Swift_SmtpTransport::newInstance(EMAIL_HOST, EMAIL_PORT, 'ssl')
-                            ->setUsername($systemEmail)
+                            ->setUsername($emailArray[0])
                             ->setPassword(SYSTEM_PASS);
 //                    Create Twig Template
                         $template = $app['twig']->render('email.html.twig', array(
                                         'data' => $data,
                                         'totalAmount' => $data['quantity'] * $amount,
-                                        'systemEmail'   => $systemEmail,
+                                        'systemEmail'   => $emailArray[0],
                                         'sameAsShipping' => $sameAsShipping,
                                     ));
-                        $emailArray = array($ecEmail, $myEmail, $systemEmail);
+
 
 //                    Create mailer
                         $mailer = Swift_Mailer::newInstance($transporter);
                         $message = Swift_Message::newInstance('Test')
-                            ->setFrom(array($systemEmail))
+                            ->setFrom($emailArray[0])
                             ->setTo(array($customerEmail))
-                            ->setBcc($emailArray)
+                            ->setBcc(array($emailArray[1], $emailArray[2], $emailArray[3]))
                             ->setSubject('I Browse Smart Purchase Order')
                             ->setBody($template, 'text/html');
 
@@ -731,25 +729,50 @@ $app->post('/get-shipping/rate', function(Request $request) use($app, $uspsUsern
     $uspsBeginData = "API=RateV4&XML=
                     <RateV4Request USERID=\"$uspsUsername\">
                         <Revision>2</Revision>
-                        <Package ID=\"1ST\">
-                            <Service>".$shippingOption."</Service>
-                            <ZipOrigination>11226</ZipOrigination>
-                            <ZipDestination>$zipDestination</ZipDestination>
-                            <Pounds>1</Pounds>
-                            <Ounces>8</Ounces>
-                            <Container>NONRECTANGULAR</Container>
-                            <Size>LARGE</Size>
-                            <Width>15</Width>
-                            <Length>30</Length>
-                            <Height>15</Height>
-                            <Girth>55</Girth>
-                            <Machinable>True</Machinable>";
-//                            <Container>RECTANGULAR</Container>
-//                            <Size>REGULAR</Size>";
+                        <Package ID=\"1ST\">";
+//    <Service>FIRST CLASS</Service>
+//    <FirstClassMailType>LETTER</FirstClassMailType>
+//    <ZipOrigination>44106</ZipOrigination>
+//    <ZipDestination>20770</ZipDestination>
+//    <Pounds>0</Pounds>
+//    <Ounces>3.5</Ounces>
+//    <Container/>
+//    <Size>REGULAR</Size>
+//    <Machinable>true</Machinable>";
+
+    if ($shippingOption == 'FIRST CLASS') {
+        $uspsBeginData .= "<Service>".$shippingOption."</Service>
+                           <FirstClassMailType>LETTER</FirstClassMailType>";
+    }
+    $uspsBeginData .= "<ZipOrigination>44106</ZipOrigination>
+                       <ZipDestination>20770</ZipDestination>
+                       <Pounds>1</Pounds>
+                       <Ounces>3.5</Ounces>";
+    if ($shippingOption == 'FIRST CLASS') {
+        $uspsBeginData .= "<Container/>
+                           <Size>REGULAR</Size>
+                           <Machinable>true</Machinable>";
+    }
+
+//    $uspsBeginData .=
+//                            "<Service>".$shippingOption."</Service>";
     $uspsExtraData = '';
-//    if ($shippingOption == 'RETAIL GROUND' || $shippingOption == 'FIRST CLASS' ||$shippingOption == 'PRIORITY') {
-//        $uspsExtraData = "<Machinable>True</Machinable>";
+//    if ($shippingOption == 'FIRST CLASS') {
+//        $uspsExtraData .= "<FirstClassMailType>LETTER</FirstClassMailType>
+//                           <Machinable>true</Machinable>";
 //    }
+//    $uspsBeginData .=
+//                           "<ZipOrigination>11226</ZipOrigination>
+//                            <ZipDestination>" . $zipDestination ."</ZipDestination>
+//                            <Pounds>1</Pounds>
+//                            <Ounces>8</Ounces>
+//                            <Container>NONRECTANGULAR</Container>
+//                            <Size>REGULAR</Size>
+//                            <Width>15</Width>
+//                            <Length>30</Length>
+//                            <Height>15</Height>
+////                            <Girth>55</Girth>";
+
     $uspsEndData =
                            "</Package>
                         </RateV4Request>";
