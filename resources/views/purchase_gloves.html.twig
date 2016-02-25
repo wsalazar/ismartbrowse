@@ -6,9 +6,9 @@
         <div class="merch pull-right">
             <img id="display" src="" width="219" height="230"/>
             <div class="image-array">
-                <div class="image pull-right">
-                    <img id="image1" src="/img/BLACK.jpg" width="50" height="50"/>
-                </div>
+                {#<div class="image pull-right">#}
+                    {#<img id="image1" src="/img/BLACK.jpg" width="50" height="50"/>#}
+                {#</div>#}
                 <div class="image pull-right">
                     <img id="image2" src="/img/black_gloves.jpg" width="50" height="50"/>
                 </div>
@@ -24,9 +24,9 @@
                 <div class="image pull-right">
                     <img id="image6" src="/img/DETAILS 4.jpg" width="50" height="50"/>
                 </div>
-                <div class="image pull-right">
-                    <img id="image7" src="/img/DETAILS 5.jpg" width="50" height="50"/>
-                </div>
+                {#<div class="image pull-right">#}
+                    {#<img id="image7" src="/img/DETAILS 5.jpg" width="50" height="50"/>#}
+                {#</div>#}
             </div>
         </div>
     </div>
@@ -178,21 +178,6 @@
                 {{ form_widget(form.payment) }}
             </div>
         </div>
-
-        {#<div class="ups-options">#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-            {#<div class="ups-option">#}
-
-            {#</div>#}
-        {#</div>#}
 
         <div class="form-actions">
             {{ form_widget(form.submit) }}
